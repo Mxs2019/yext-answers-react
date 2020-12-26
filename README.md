@@ -32,19 +32,17 @@ yarn add yext-answers-react
 
 ## Getting Started
 
-In order to start using this library, you will need to wrap your app in the `<AnswersContext>` component and then add the hook `useAnswers` to a child component. The `<AnswersContext>` component requires three props `config`, `core`, and `verticalKey`.
+In order to start using this library, you will need to wrap your app in the `<AnswersContext>` component and then add the hook `useAnswers` to a child component. The `<AnswersContext>` component requires a `config` prop with the following properties.
 
-| Prop          | Type          | Required |
-| ------------- | ------------- | -------- |
-| `config`      | `object`      | No       |
-| `core`        | `AnswersCore` | Yes      |
-| `verticalKey` | `string`      | Yes      |
-
-The config has the following optional propertiers
-
-| Prop              | Type      | Default |
-| ----------------- | --------- | ------- |
-| `runSearchOnLoad` | `boolean` | `false` |
+| Property            | Type      | Required | Default |
+| ------------------- | --------- | -------- | ------- |
+| `apiKey`            | `string`  | Yes      |         |
+| `experienceKey`     | `string`  | Yes      |         |
+| `experienceVersion` | `string`  | Yes      |         |
+| `loacle`            | `string`  | Yes      |         |
+| `verticalKey`       | `string`  | Yes      |         |
+| `runSearchOnLoad`   | `boolean` | No       | `False` |
+| `debug`             | `boolean` | No       | `False` |
 
 After wrapping the app in the `<AnswersContext>` then use
 the hook `useAnswers` to access `state` and `actions`
