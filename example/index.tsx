@@ -1,10 +1,12 @@
 import * as React from 'react';
 import 'react-app-polyfill/ie11';
 import * as ReactDOM from 'react-dom';
-import { AnswersContext, useAnswers } from '../.';
-import { Config } from '../dist/AnswersContext';
+import { AnswersConfig, AnswersContext, useAnswers } from '../.';
+import Facets from './components/Facets';
+import Results from './components/Results';
+import SearchBar from './components/SearchBar';
 
-const config: Config = {
+const config: AnswersConfig = {
   apiKey: '7bce922a5847aff36dc33345921ba700',
   experienceKey: 'dtc_demo',
   experienceVersion: 'PRODUCTION',
@@ -15,52 +17,20 @@ const config: Config = {
 };
 
 const App = () => {
-  const { state, actions } = useAnswers();
+  const { state } = useAnswers();
   return (
     <div>
-      <form
-        onSubmit={e => {
-          e.preventDefault();
-          actions.runSearch();
-        }}
-      >
-        <input
-          value={state.visibleSearchTerm}
-          onKeyDown={e => {
-            if (e.key === 'ArrowDown') {
-              e.preventDefault();
-              actions.nextAutocompleteOption();
-            } else if (e.key === 'ArrowUp') {
-              e.preventDefault();
-              actions.prevAutocompleteOption();
-            }
-          }}
-          onChange={e => actions.handleSearchTermChange(e.target.value)}
-        />
-      </form>
-      {state.autocomplete.autocompleteOptions && (
-        <div>
-          {state.autocomplete.autocompleteOptions.map(a => (
-            <div
-              key={a.key}
-              style={{ backgroundColor: a.selected ? '#EEE' : '#FFF' }}
-            >
-              {a.value}
-            </div>
-          ))}
+      <SearchBar />
+      <div style={{ display: 'flex' }}>
+        <div style={{ width: '24rem' }}>
+          <Facets />
         </div>
-      )}
-      {state.loading && <div>Loading...</div>}
-      {state.error && <div>Newtork Error</div>}
-      {state.verticalresults && (
-        <div>
-          {state.verticalresults.results.map(e => (
-            <ul key={e.id}>
-              <li>{e.name}</li>
-            </ul>
-          ))}
+        <div style={{ flexGrow: 1 }}>
+          {state.loading && <div>Loading...</div>}
+          {state.error && <div>Network Error</div>}
+          <Results />
         </div>
-      )}
+      </div>
     </div>
   );
 };

@@ -5,7 +5,8 @@ import {
   SortBy,
   VerticalSearchResponse,
 } from '@yext/answers-core';
-import { Config } from './AnswersContext';
+import { AnswersConfig } from './AnswersConfig';
+import { sortFacets } from './facetUtilties';
 import { InitialStateType } from './initialState';
 export type Action =
   | { type: 'PREPARE_FOR_SEARCH'; searchTerm: string }
@@ -19,8 +20,8 @@ export type Action =
   | { type: 'NEXT_AUTOCOMPLETE_OPTION' }
   | { type: 'SET_ERROR'; error: any }
   | { type: 'PREVIOUS_AUTOCOMPLETE_OPTION' }
-  | { type: 'APPEND_ENTITIES'; entities: any[] }
-  | { type: 'SET_CONFIGURATION'; config: Config }
+  | { type: 'APPEND_RESULTS'; results: any[] }
+  | { type: 'SET_CONFIGURATION'; config: AnswersConfig }
   | { type: 'UPDATE_SORT_BYS'; sortBys?: SortBy[] }
   | { type: 'UPDATE_FACETS'; facets: Facet[] };
 
@@ -31,13 +32,20 @@ const reducer = (state: InitialStateType, action: Action): InitialStateType => {
   ) {
     console.log(action.type, action);
   }
-  const { autocomplete } = state;
+  const { autocomplete, facetSorter } = state;
   switch (action.type) {
     case 'PREPARE_FOR_SEARCH':
       return {
         ...state,
         loading: true,
-
+        error: false,
+        autocomplete: {
+          loading: false,
+          autocompleteOptions: [],
+          recentSearches: [],
+          querySuggestions: [],
+          selectedIndex: -1,
+        },
         lastSearchedTerm: action.searchTerm,
         visibleSearchTerm: action.searchTerm,
         originalSearchTerm: action.searchTerm,
@@ -48,8 +56,8 @@ const reducer = (state: InitialStateType, action: Action): InitialStateType => {
       return {
         ...state,
         core,
+        ...config,
         debug: config.debug || false,
-        verticalKey: config.verticalKey,
       };
     case 'ON_SEARCH_TERM_CHANGE':
       return {
@@ -63,28 +71,22 @@ const reducer = (state: InitialStateType, action: Action): InitialStateType => {
       }
       return {
         ...state,
+        loading: false,
         error: action.error,
       };
-    case 'SET_VERTICAL_RESPONSE':
+    case 'SET_VERTICAL_RESPONSE': {
       const { response } = action;
+      const facets = (response.facets as any) as Facet[];
       return {
         ...state,
         loading: false,
         error: false,
         verticalresults: response.verticalResults,
         hasSearched: true,
-        autocomplete: {
-          loading: false,
-          autocompleteOptions: [],
-          recentSearches: [],
-          querySuggestions: [],
-          selectedIndex: -1,
-        },
-        entities: response.verticalResults.results.map(
-          (r: any) => r.rawData as any
-        ),
-        facets: (response.facets as any) as Facet[],
+        results: response.verticalResults.results,
+        facets: facetSorter ? facetSorter(facets) : sortFacets(facets),
       };
+    }
     case 'SET_AUTOCOMPLETE':
       const { querySuggestions, recentSearches } = action;
       return {
@@ -167,10 +169,10 @@ const reducer = (state: InitialStateType, action: Action): InitialStateType => {
         visibleSearchTerm: newVisibleSearchTerm,
       };
 
-    case 'APPEND_ENTITIES':
+    case 'APPEND_RESULTS':
       return {
         ...state,
-        entities: [...state.entities, ...action.entities],
+        results: [...state.results, ...action.results],
       };
     case 'UPDATE_SORT_BYS':
       return {

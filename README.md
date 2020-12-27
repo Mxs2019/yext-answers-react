@@ -166,6 +166,7 @@ action.runSearch();
 | `updateSortBys(sortBys: SortBy[]), updateSearchResults = true`                             | Used to update the sort bys. By default this will automatically run a new search.                                                               |
 | `loadMore()`                                                                               | This will load more results                                                                                                                     |
 | `setConfiguration(config: Config)`                                                         | Usually only set on load. This will automatically be set via the `<AnswersContext />`. This can however be updated in the middle of a sessions. |
+| `chooseAutocompleteOption(index: number)`                                                  | Choose the autocomplete option at the specified index. This will handle logging analytics, checking for geosearch and then running a search     |
 
 ### Todos
 

@@ -13,9 +13,10 @@ export const useAnswersStore = () => {
     lastSearchedTerm,
     visibleSearchTerm,
     facets,
-    entities,
+    autocomplete,
     sortBys,
     verticalKey,
+    results,
     core,
   } = state;
 
@@ -52,6 +53,15 @@ export const useAnswersStore = () => {
         type: 'SET_ERROR',
         error,
       });
+    }
+  };
+
+  const chooseAutocompleteOption = (index: number) => {
+    const option = autocomplete.autocompleteOptions[index];
+    if (option) {
+      runSearch(option.value);
+    } else {
+      console.log('Index does not exist');
     }
   };
 
@@ -146,12 +156,12 @@ export const useAnswersStore = () => {
       verticalKey,
       retrieveFacets: true,
       facetFilters: getFacetFilters(facets),
-      offset: entities.length,
+      offset: results.length,
     });
 
     dispatch({
-      type: 'APPEND_ENTITIES',
-      entities: res.verticalResults.results.map((r: any) => r.rawData),
+      type: 'APPEND_RESULTS',
+      results: res.verticalResults.results,
     });
   };
 
@@ -168,6 +178,7 @@ export const useAnswersStore = () => {
     actions: {
       runSearch,
       handleSearchTermChange,
+      chooseAutocompleteOption,
       toggleFacet,
       loadMore,
       updateSortBys,

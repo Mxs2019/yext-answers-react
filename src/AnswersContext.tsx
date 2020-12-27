@@ -1,21 +1,12 @@
 import React, { useEffect } from 'react';
+import { AnswersConfig } from './AnswersConfig';
 import AnswersStore from './AnswersStore';
 import { useAnswersStore } from './useAnswersStore';
-
-export type Config = {
-  apiKey: string;
-  experienceKey: string;
-  experienceVersion: string;
-  locale: string;
-  verticalKey: string;
-  runSearchOnLoad?: boolean;
-  debug?: boolean;
-};
 
 type Props = {
   //Insert Props Here
   children: React.ReactNode;
-  config: Config;
+  config: AnswersConfig;
 };
 
 const AnswersContext: React.FC<Props> = props => {
@@ -30,7 +21,7 @@ const Inner = ({ config, children }: Props) => {
   const { runSearchOnLoad = false } = config;
   const {
     state,
-    actions: { runSearch, setConfiguration },
+    actions: { runSearch, setConfiguration, handleSearchTermChange },
   } = useAnswersStore();
   useEffect(() => {
     if (!state.verticalKey) {
@@ -38,6 +29,10 @@ const Inner = ({ config, children }: Props) => {
     }
     if (runSearchOnLoad && state.verticalKey) {
       runSearch();
+    }
+
+    if (state.verticalKey) {
+      handleSearchTermChange('');
     }
   }, [runSearchOnLoad, state.verticalKey]);
 

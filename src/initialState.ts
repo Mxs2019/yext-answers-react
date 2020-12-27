@@ -30,10 +30,12 @@ export type InitialStateType = {
   lastSearchedTerm: string; // last searched term (search term of the results)
   originalSearchTerm: string; // search term that might be hidden due to showing autocomplete
   verticalresults?: VerticalResults;
+  results: any[];
   facets: Facet[];
   sortBys?: SortBy[];
   autocomplete: AutocompleteState;
   debug: boolean;
+  facetSorter?: (facets: Facet[]) => Facet[];
 };
 
 export const initialState: InitialStateType = {
@@ -47,6 +49,7 @@ export const initialState: InitialStateType = {
   lastSearchedTerm: '',
   originalSearchTerm: '',
   verticalresults: undefined,
+  results: [],
   entities: [],
   facets: [],
   autocomplete: {
