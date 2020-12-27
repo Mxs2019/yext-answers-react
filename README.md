@@ -34,15 +34,16 @@ yarn add yext-answers-react
 
 In order to start using this library, you will need to wrap your app in the `<AnswersContext>` component and then add the hook `useAnswers` to a child component. The `<AnswersContext>` component requires a `config` prop with the following properties.
 
-| Property            | Type      | Required | Default |
-| ------------------- | --------- | -------- | ------- |
-| `apiKey`            | `string`  | Yes      |         |
-| `experienceKey`     | `string`  | Yes      |         |
-| `experienceVersion` | `string`  | Yes      |         |
-| `loacle`            | `string`  | Yes      |         |
-| `verticalKey`       | `string`  | Yes      |         |
-| `runSearchOnLoad`   | `boolean` | No       | `False` |
-| `debug`             | `boolean` | No       | `False` |
+| Property            | Type                           | Required | Default |
+| ------------------- | ------------------------------ | -------- | ------- |
+| `apiKey`            | `string`                       | Yes      |         |
+| `experienceKey`     | `string`                       | Yes      |         |
+| `experienceVersion` | `string`                       | Yes      |         |
+| `loacle`            | `string`                       | Yes      |         |
+| `verticalKey`       | `string`                       | Yes      |         |
+| `runSearchOnLoad`   | `boolean`                      | No       | `False` |
+| `facetSorter`       | `(facets: Facet[]) => Facet[]` | No       |         |
+| `debug`             | `boolean`                      | No       | `False` |
 
 After wrapping the app in the `<AnswersContext>` then use
 the hook `useAnswers` to access `state` and `actions`
@@ -132,6 +133,7 @@ State is global and show be used to render the search components.State is readon
 | `lastSearchedTerm`   | `string`            | The last search term used to run a search. This will only update when a search runs.                                                                                                       |
 | `originalSearchTerm` | `string`            | The `visibleSearchTerm` will update when a user cycles between autocomplete options. The `originalSearchTerm` is the search term the user entered **before** cycling through autocomplete. |
 | `verticalresults`    | `VerticalResults`   | The full response from the vertical search API                                                                                                                                             |
+| `results`            | `any[]`             | The results child from verticalresults                                                                                                                                                     |
 | `facets`             | `Facet[]`           | A set of facets returned from the vertical search                                                                                                                                          |
 | `sortBys`            | `SortBy[]`          | The currently set sort bys                                                                                                                                                                 |
 | `autocomplete`       | `AutocompleteState` | Autocomplete object (see below)                                                                                                                                                            |
