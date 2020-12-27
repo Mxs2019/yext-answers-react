@@ -101,13 +101,23 @@ const reducer = (state: InitialStateType, action: Action): InitialStateType => {
                 type: 'RECENT',
               };
             }),
-            ...querySuggestions.map(s => {
-              return {
-                ...s,
-                type: 'SUGGESTION',
-              };
-            }),
-          ] as { value: string; type: 'RECENT' | 'SUGGESTION' }[],
+            ...querySuggestions
+              .filter(q => {
+                // Dedupe recent searches
+                return !recentSearches.map(s => s.query).includes(q.value);
+              })
+              .map(s => {
+                return {
+                  ...s,
+                  type: 'SUGGESTION',
+                };
+              }),
+          ].map(s => {
+            return {
+              ...s,
+              key: s.type + s.value,
+            };
+          }) as { value: string; type: 'RECENT' | 'SUGGESTION'; key: string }[],
         },
       };
     case 'NEXT_AUTOCOMPLETE_OPTION':
@@ -119,6 +129,14 @@ const reducer = (state: InitialStateType, action: Action): InitialStateType => {
         ...state,
         autocomplete: {
           ...autocomplete,
+          autocompleteOptions: state.autocomplete.autocompleteOptions.map(
+            (o, i) => {
+              return {
+                ...o,
+                selected: i === nextIndex,
+              };
+            }
+          ),
           selectedIndex: nextIndex,
         },
         visibleSearchTerm: autocomplete.autocompleteOptions[nextIndex].value,
@@ -136,6 +154,14 @@ const reducer = (state: InitialStateType, action: Action): InitialStateType => {
         ...state,
         autocomplete: {
           ...autocomplete,
+          autocompleteOptions: state.autocomplete.autocompleteOptions.map(
+            (o, i) => {
+              return {
+                ...o,
+                selected: i === prevIndex,
+              };
+            }
+          ),
           selectedIndex: prevIndex,
         },
         visibleSearchTerm: newVisibleSearchTerm,

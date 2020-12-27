@@ -26,18 +26,41 @@ const App = () => {
       >
         <input
           value={state.visibleSearchTerm}
+          onKeyDown={e => {
+            if (e.key === 'ArrowDown') {
+              e.preventDefault();
+              actions.nextAutocompleteOption();
+            } else if (e.key === 'ArrowUp') {
+              e.preventDefault();
+              actions.prevAutocompleteOption();
+            }
+          }}
           onChange={e => actions.handleSearchTermChange(e.target.value)}
         />
       </form>
+      {state.autocomplete.autocompleteOptions && (
+        <div>
+          {state.autocomplete.autocompleteOptions.map(a => (
+            <div
+              key={a.key}
+              style={{ backgroundColor: a.selected ? '#EEE' : '#FFF' }}
+            >
+              {a.value}
+            </div>
+          ))}
+        </div>
+      )}
       {state.loading && <div>Loading...</div>}
       {state.error && <div>Newtork Error</div>}
-      <div>
-        {state.entities.map(e => (
-          <ul key={e.id}>
-            <li>{e.name}</li>
-          </ul>
-        ))}
-      </div>
+      {state.verticalresults && (
+        <div>
+          {state.verticalresults.results.map(e => (
+            <ul key={e.id}>
+              <li>{e.name}</li>
+            </ul>
+          ))}
+        </div>
+      )}
     </div>
   );
 };

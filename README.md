@@ -84,13 +84,15 @@ const App = () => {
       </form>
       {state.loading && <div>Loading...</div>}
       {state.error && <div>Newtork Error</div>}
-      <div>
-        {state.entities.map(e => (
-          <ul key={e.id}>
-            <li>{e.name}</li>
-          </ul>
-        ))}
-      </div>
+      {state.verticalresults && (
+        <div>
+          {state.verticalresults.results.map(e => (
+            <ul key={e.id}>
+              <li>{e.name}</li>
+            </ul>
+          ))}
+        </div>
+      )}
     </div>
   );
 };
@@ -130,7 +132,6 @@ State is global and show be used to render the search components.State is readon
 | `lastSearchedTerm`   | `string`            | The last search term used to run a search. This will only update when a search runs.                                                                                                       |
 | `originalSearchTerm` | `string`            | The `visibleSearchTerm` will update when a user cycles between autocomplete options. The `originalSearchTerm` is the search term the user entered **before** cycling through autocomplete. |
 | `verticalresults`    | `VerticalResults`   | The full response from the vertical search API                                                                                                                                             |
-| `entities`           | `any[]`             | Just the entities returned from the vertical search                                                                                                                                        |
 | `facets`             | `Facet[]`           | A set of facets returned from the vertical search                                                                                                                                          |
 | `sortBys`            | `SortBy[]`          | The currently set sort bys                                                                                                                                                                 |
 | `autocomplete`       | `AutocompleteState` | Autocomplete object (see below)                                                                                                                                                            |
@@ -142,7 +143,7 @@ State is global and show be used to render the search components.State is readon
 | Property | Type | Description |
 | -------------------- | ------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
 | `loading` | `boolean` | Whether or not autcomplete is loading. This is usually not shown in a UI since autocomplete is very fast |
-| `autocompleteOptions` | `{ value: string; type: string }` | A list of all autocomplete options. This list includes both recent searches and query sugggestions. Recent searches have a `type` of `RECENT` while suggestions have a type of `SUGGESTION`. This list should be used to populate the autocomplete menu. This list will automatically update as the `visibleSearchTerm` changes |
+| `autocompleteOptions` | `{ value: string; type: string; selected?: boolena; }` | A list of all autocomplete options. This list includes both recent searches and query sugggestions. Recent searches have a `type` of `RECENT` while suggestions have a type of `SUGGESTION`. This list should be used to populate the autocomplete menu. This list will automatically update as the `visibleSearchTerm` changes. The `selected` property can be used to style a selected autocomplete option |
 | `querySuggestions` | `AutocompleteResult[]` | A list of just the query suggestions |
 | `recentSearches` | `{ query: string }[]` | A list of just the users recent searches that match the `visibleSearchTerm` |
 | `selectedIndex` | `number` | The index of the selected autocomplete option. By default this is `-1` which means no autocomplete is selected. As a user cycles through autocomplete (see `NEXT_AUTOCOMPLETE_OPTION` below) this index will change. This index should be used to highlight the row in the autocomplete |

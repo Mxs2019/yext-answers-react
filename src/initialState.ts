@@ -9,6 +9,8 @@ type AutocompleteState = {
   autocompleteOptions: {
     value: string;
     type: 'RECENT' | 'SUGGESTION';
+    key: string;
+    selected?: boolean;
   }[];
   loading: boolean;
   querySuggestions: AutoCompleteResult[];
@@ -28,7 +30,6 @@ export type InitialStateType = {
   lastSearchedTerm: string; // last searched term (search term of the results)
   originalSearchTerm: string; // search term that might be hidden due to showing autocomplete
   verticalresults?: VerticalResults;
-  entities: any[];
   facets: Facet[];
   sortBys?: SortBy[];
   autocomplete: AutocompleteState;
