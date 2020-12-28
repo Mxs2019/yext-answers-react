@@ -32,7 +32,7 @@ const Autocomplete = ({ inputFocused }: Props) => {
                 <div
                   key={a.key}
                   style={{
-                    backgroundColor: a.selected ? '#EEE' : '#FFF',
+                    backgroundColor: a.highlighted ? '#EEE' : '#FFF',
                     cursor: 'pointer',
                     padding: '0.5rem',
                   }}

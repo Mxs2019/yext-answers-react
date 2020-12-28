@@ -6,9 +6,14 @@ import {
   VerticalSearchResponse,
 } from '@yext/answers-core';
 import { AnswersConfig } from './AnswersConfig';
-import { sortFacets } from './facetUtilties';
-import { InitialStateType } from './initialState';
+import { getFacetFilters, sortFacets } from './facetUtilties';
+import { AppliedFilter, InitialStateType } from './initialState';
 export type Action =
+  | {
+      type: 'SET_CONFIGURATION';
+      config: AnswersConfig;
+      initialState: InitialStateType;
+    }
   | { type: 'PREPARE_FOR_SEARCH'; searchTerm: string }
   | { type: 'ON_SEARCH_TERM_CHANGE'; searchTerm: string }
   | { type: 'SET_VERTICAL_RESPONSE'; response: VerticalSearchResponse }
@@ -21,7 +26,6 @@ export type Action =
   | { type: 'SET_ERROR'; error: any }
   | { type: 'PREVIOUS_AUTOCOMPLETE_OPTION' }
   | { type: 'APPEND_RESULTS'; results: any[] }
-  | { type: 'SET_CONFIGURATION'; config: AnswersConfig }
   | { type: 'UPDATE_SORT_BYS'; sortBys?: SortBy[] }
   | { type: 'UPDATE_FACETS'; facets: Facet[] };
 
@@ -50,15 +54,17 @@ const reducer = (state: InitialStateType, action: Action): InitialStateType => {
         visibleSearchTerm: action.searchTerm,
         originalSearchTerm: action.searchTerm,
       };
-    case 'SET_CONFIGURATION':
-      const { config } = action;
+    case 'SET_CONFIGURATION': {
+      const { config, initialState } = action;
       const core = provideCore(config);
       return {
         ...state,
+        ...initialState,
         core,
         ...config,
         debug: config.debug || false,
       };
+    }
     case 'ON_SEARCH_TERM_CHANGE':
       return {
         ...state,
@@ -77,14 +83,70 @@ const reducer = (state: InitialStateType, action: Action): InitialStateType => {
     case 'SET_VERTICAL_RESPONSE': {
       const { response } = action;
       const facets = (response.facets as any) as Facet[];
+      const newFacetFilters = getFacetFilters(facets);
+      const facetFilters = [
+        ...state.facetFilters.filter(f => {
+          const matchedIndex = newFacetFilters.findIndex(
+            g => g.fieldId === f.fieldId && g.comparedValue === f.comparedValue
+          );
+          return matchedIndex === -1;
+        }),
+        ...newFacetFilters,
+      ];
+
+      const appliedFilters: AppliedFilter[] = [];
+
+      // response.verticalResults.appliedQueryFilters.forEach(q => {
+      //   const isFacet =
+      //     facetFilters.findIndex(
+      //       f =>
+      //         q.filter.fieldId === f.fieldId &&
+      //         q.displayValue === f.comparedValue
+      //     ) === -1;
+
+      //   if (!isFacet) {
+      //     console.log('NLP Filter');
+      //   }
+      // });
+
+      facets.forEach(f => {
+        f.options.forEach(o => {
+          if (o.selected === true) {
+            //  Check if Facet Field Exists
+            const matchedIndex = appliedFilters.findIndex(
+              af => af.fieldId === f.fieldId
+            );
+            if (matchedIndex !== -1) {
+              appliedFilters[matchedIndex].values.push(o.displayName);
+            } else {
+              appliedFilters.push({
+                displayName: f.displayName,
+                fieldId: f.fieldId,
+                source: 'FACET',
+                values: [o.displayName],
+              });
+            }
+          }
+        });
+      });
+
       return {
         ...state,
         loading: false,
+        autocomplete: {
+          loading: false,
+          autocompleteOptions: [],
+          recentSearches: [],
+          querySuggestions: [],
+          selectedIndex: -1,
+        },
         error: false,
         verticalresults: response.verticalResults,
         hasSearched: true,
         results: response.verticalResults.results,
         facets: facetSorter ? facetSorter(facets) : sortFacets(facets),
+        appliedFilters,
+        facetFilters,
       };
     }
     case 'SET_AUTOCOMPLETE':
@@ -135,7 +197,7 @@ const reducer = (state: InitialStateType, action: Action): InitialStateType => {
             (o, i) => {
               return {
                 ...o,
-                selected: i === nextIndex,
+                highlighted: i === nextIndex,
               };
             }
           ),
@@ -160,7 +222,7 @@ const reducer = (state: InitialStateType, action: Action): InitialStateType => {
             (o, i) => {
               return {
                 ...o,
-                selected: i === prevIndex,
+                highlighted: i === prevIndex,
               };
             }
           ),
@@ -183,6 +245,7 @@ const reducer = (state: InitialStateType, action: Action): InitialStateType => {
       const { facets } = action;
       return {
         ...state,
+        facetFilters: getFacetFilters(facets),
         facets,
       };
 

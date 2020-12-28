@@ -1,13 +1,18 @@
-import { SortBy, VerticalSearchResponse } from '@yext/answers-core';
+import {
+  SimpleFilter,
+  SortBy,
+  VerticalSearchResponse,
+} from '@yext/answers-core';
 import { useContext } from 'react';
 import RecentSearches from 'recent-searches';
-import { Config } from './AnswersContext';
+import { AnswersConfig } from './AnswersConfig';
 import { AppContext } from './AnswersStore';
 import { getFacetFilters, toggleFacetObject } from './facetUtilties';
+import { InitialStateType } from './initialState';
 
 const recentSearchesController = new RecentSearches();
 
-export const useAnswersStore = () => {
+export const useAnswers = () => {
   const { state, dispatch } = useContext(AppContext);
   const {
     lastSearchedTerm,
@@ -18,32 +23,57 @@ export const useAnswersStore = () => {
     verticalKey,
     results,
     core,
+    facetFilters,
   } = state;
 
-  const setConfiguration = (config: Config) => {
+  const setConfiguration = (
+    config: AnswersConfig,
+    initialState: InitialStateType
+  ) => {
     dispatch({
       type: 'SET_CONFIGURATION',
       config,
+      initialState,
     });
   };
 
-  const runSearch = async (searchTerm: string = visibleSearchTerm) => {
+  const runSearch = async (
+    searchTerm: string = visibleSearchTerm,
+    clearFacets = true
+  ) => {
     recentSearchesController.setRecentSearch(searchTerm);
 
+    handleSearch(searchTerm, clearFacets ? undefined : facetFilters, sortBys);
+  };
+
+  const chooseAutocompleteOption = (index: number) => {
+    const option = autocomplete.autocompleteOptions[index];
+    if (option) {
+      runSearch(option.value);
+    } else {
+      console.log('Index does not exist');
+    }
+  };
+
+  const handleSearch = async (
+    searchTerm: string,
+    facetFilters?: SimpleFilter[],
+    sortBys?: SortBy[]
+  ) => {
     dispatch({
       type: 'PREPARE_FOR_SEARCH',
-      searchTerm,
+      searchTerm: searchTerm,
     });
 
     try {
-      const res = await core.verticalSearch({
+      const res: VerticalSearchResponse = await core.verticalSearch({
         query: searchTerm,
         context: {},
         verticalKey,
         retrieveFacets: true,
-        // facetFilters: getFacetFilters(facets),
+        sortBys,
+        facetFilters,
       });
-
       dispatch({
         type: 'SET_VERTICAL_RESPONSE',
         response: res,
@@ -53,15 +83,6 @@ export const useAnswersStore = () => {
         type: 'SET_ERROR',
         error,
       });
-    }
-  };
-
-  const chooseAutocompleteOption = (index: number) => {
-    const option = autocomplete.autocompleteOptions[index];
-    if (option) {
-      runSearch(option.value);
-    } else {
-      console.log('Index does not exist');
     }
   };
 
@@ -93,23 +114,7 @@ export const useAnswersStore = () => {
     });
 
     if (updateSearchResults) {
-      dispatch({
-        type: 'PREPARE_FOR_SEARCH',
-        searchTerm: lastSearchedTerm,
-      });
-
-      const res: VerticalSearchResponse = await core.verticalSearch({
-        query: lastSearchedTerm,
-        context: {},
-        verticalKey,
-        retrieveFacets: true,
-        sortBys,
-        facetFilters: getFacetFilters(facets),
-      });
-      dispatch({
-        type: 'SET_VERTICAL_RESPONSE',
-        response: res,
-      });
+      handleSearch(lastSearchedTerm, getFacetFilters(facets), sortBys);
     }
   };
 
@@ -129,23 +134,29 @@ export const useAnswersStore = () => {
       facets: updatedFacets,
     });
 
+    console.log(facetFilters);
+    let removed = false;
+    const updatedFacetFilters = facetFilters.filter(f => {
+      if (f.fieldId === facetFieldId && f.comparedValue === optionDisplayName) {
+        removed = true;
+        return false;
+      } else {
+        return true;
+      }
+    });
+
+    if (!removed) {
+      updatedFacetFilters.push({
+        fieldId: facetFieldId,
+        comparator: '$eq',
+        comparedValue: optionDisplayName,
+      });
+    }
+
+    console.log(updatedFacetFilters);
+
     if (updateSearchResults) {
-      dispatch({
-        type: 'PREPARE_FOR_SEARCH',
-        searchTerm: lastSearchedTerm,
-      });
-      const res = await core.verticalSearch({
-        query: lastSearchedTerm,
-        context: {},
-        verticalKey,
-        retrieveFacets: true,
-        sortBys,
-        facetFilters: getFacetFilters(updatedFacets),
-      });
-      dispatch({
-        type: 'SET_VERTICAL_RESPONSE',
-        response: res,
-      });
+      handleSearch(lastSearchedTerm, updatedFacetFilters, sortBys);
     }
   };
 
@@ -173,6 +184,26 @@ export const useAnswersStore = () => {
     dispatch({ type: 'PREVIOUS_AUTOCOMPLETE_OPTION' });
   };
 
+  const clearSearch = () => {
+    dispatch({ type: 'ON_SEARCH_TERM_CHANGE', searchTerm: '' });
+    dispatch({
+      type: 'UPDATE_FACETS',
+      facets: facets.map(f => {
+        return {
+          ...f,
+          options: f.options.map(o => {
+            return {
+              ...o,
+              selected: false,
+            };
+          }),
+        };
+      }),
+    });
+    dispatch({ type: 'UPDATE_SORT_BYS', sortBys: undefined });
+    handleSearch('', undefined, undefined);
+  };
+
   return {
     state,
     actions: {
@@ -185,6 +216,7 @@ export const useAnswersStore = () => {
       setConfiguration,
       nextAutocompleteOption,
       prevAutocompleteOption,
+      clearSearch,
     },
   };
 };

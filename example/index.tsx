@@ -5,6 +5,7 @@ import { AnswersConfig, AnswersContext, useAnswers } from '../.';
 import Facets from './components/Facets';
 import Results from './components/Results';
 import SearchBar from './components/SearchBar';
+import Sorting from './components/SortBy';
 
 const config: AnswersConfig = {
   apiKey: '7bce922a5847aff36dc33345921ba700',
@@ -23,9 +24,10 @@ const App = () => {
       <SearchBar />
       <div style={{ display: 'flex' }}>
         <div style={{ width: '24rem' }}>
+          <Sorting />
           <Facets />
         </div>
-        <div style={{ flexGrow: 1 }}>
+        <div style={{ flexGrow: 1, padding: '1rem' }}>
           {state.loading && <div>Loading...</div>}
           {state.error && <div>Network Error</div>}
           <Results />

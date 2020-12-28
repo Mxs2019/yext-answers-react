@@ -26,7 +26,12 @@ const SearchBar = () => {
       >
         <input
           placeholder="Search..."
-          style={{ display: 'block', padding: '0.5rem', width: '99%' }}
+          style={{
+            display: 'block',
+            padding: '0.5rem',
+            width: '99%',
+            border: '1px solid lightgrey',
+          }}
           value={visibleSearchTerm}
           onFocus={() => setIsFocused(true)}
           onBlur={() => setIsFocused(false)}

@@ -1,7 +1,10 @@
 import React, { useEffect } from 'react';
+import { QueryParamProvider } from 'use-query-params';
 import { AnswersConfig } from './AnswersConfig';
 import AnswersStore from './AnswersStore';
-import { useAnswersStore } from './useAnswersStore';
+import { initialState } from './initialState';
+import { useAnswers } from './useAnswers';
+import { useQueryParamManager } from './useQueryParamManager';
 
 type Props = {
   //Insert Props Here
@@ -11,9 +14,11 @@ type Props = {
 
 const AnswersContext: React.FC<Props> = props => {
   return (
-    <AnswersStore>
-      <Inner {...props} />
-    </AnswersStore>
+    <QueryParamProvider>
+      <AnswersStore>
+        <Inner {...props} />
+      </AnswersStore>
+    </QueryParamProvider>
   );
 };
 
@@ -22,17 +27,26 @@ const Inner = ({ config, children }: Props) => {
   const {
     state,
     actions: { runSearch, setConfiguration, handleSearchTermChange },
-  } = useAnswersStore();
+  } = useAnswers();
+
+  const queryParams = useQueryParamManager();
   useEffect(() => {
     if (!state.verticalKey) {
-      setConfiguration(config);
+      setConfiguration(config, {
+        ...initialState,
+        lastSearchedTerm: queryParams.query || '',
+        originalSearchTerm: queryParams.query || '',
+        visibleSearchTerm: queryParams.query || '',
+        facetFilters: queryParams.filters || [],
+        sortBys: queryParams.sortBys,
+      });
     }
     if (runSearchOnLoad && state.verticalKey) {
-      runSearch();
+      runSearch(undefined, false);
     }
 
     if (state.verticalKey) {
-      handleSearchTermChange('');
+      handleSearchTermChange();
     }
   }, [runSearchOnLoad, state.verticalKey]);
 

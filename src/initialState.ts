@@ -2,6 +2,7 @@ import {
   AnswersCore,
   AutoCompleteResult,
   Facet,
+  SimpleFilter,
   SortBy,
   VerticalResults,
 } from '@yext/answers-core';
@@ -10,7 +11,7 @@ type AutocompleteState = {
     value: string;
     type: 'RECENT' | 'SUGGESTION';
     key: string;
-    selected?: boolean;
+    highlighted?: boolean;
   }[];
   loading: boolean;
   querySuggestions: AutoCompleteResult[];
@@ -18,6 +19,13 @@ type AutocompleteState = {
     query: string;
   }[];
   selectedIndex: number;
+};
+
+export type AppliedFilter = {
+  displayName: string;
+  fieldId: string;
+  values: string[];
+  source: 'FACET' | 'NLP';
 };
 
 export type InitialStateType = {
@@ -32,6 +40,8 @@ export type InitialStateType = {
   verticalresults?: VerticalResults;
   results: any[];
   facets: Facet[];
+  facetFilters: SimpleFilter[];
+  appliedFilters: AppliedFilter[];
   sortBys?: SortBy[];
   autocomplete: AutocompleteState;
   debug: boolean;
@@ -52,6 +62,8 @@ export const initialState: InitialStateType = {
   results: [],
   entities: [],
   facets: [],
+  appliedQueryFilters: [],
+  facetFilters: [],
   autocomplete: {
     querySuggestions: [],
     loading: false,

@@ -7,7 +7,7 @@ app shows a basic example of using this library.
 
 > For now this library only supports vertical search
 
-## Table of Contents
+# Table of Contents
 
 - [Installation](#Installation)
 - [Getting Started](#Getting-Started)
@@ -16,7 +16,7 @@ app shows a basic example of using this library.
   - [State](#State)
   - [Actions](#Actions)
 
-## Installation
+# Installation
 
 Install this library with npm or yarn.
 
@@ -30,7 +30,24 @@ OR
 yarn add yext-answers-react
 ```
 
-## Getting Started
+> This library requires @yext/answers-core as a dependency. Since this library is currently not public, you will need to make sure this library is cloned and built and lives in the same parent folder as the sample project.
+
+### Create React App
+
+If you wanted to use this library with `create-react-app` you would issue the following commands:
+
+```shell
+npx create-react-app product-search --template typescript
+cd product-search
+yarn add yext-answers-react
+yarn start
+```
+
+### Typescript
+
+This library is written in Typescript and too have the best experience you should use typescript as well.
+
+# Getting Started
 
 In order to start using this library, you will need to wrap your app in the `<AnswersContext>` component and then add the hook `useAnswers` to a child component. The `<AnswersContext>` component requires a `config` prop with the following properties.
 
@@ -48,15 +65,15 @@ In order to start using this library, you will need to wrap your app in the `<An
 After wrapping the app in the `<AnswersContext>` then use
 the hook `useAnswers` to access `state` and `actions`
 
-## Example
+# Basic Example
 
-Here is a basic example app that has a search bar and a set of results.
+Here is a basic example app that has a search bar and a set of results. Generally in a production setting you would split this across multiple child components but to keep this simple everything in one file.
 
 ```tsx
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 import { provideCore } from '@yext/answers-core';
-import { AnswersContext, useAnswers, Config } from '../.';
+import { AnswersContext, useAnswers, Config } from 'yext-answers-react';
 
 const config: Config = {
   apiKey: '7bce922a5847aff36dc33345921ba700',
@@ -106,9 +123,9 @@ ReactDOM.render(
 );
 ```
 
-## Documentation
+# Documentation
 
-### State
+## State
 
 State can be read directly from the `useAnswers` hook. For example:
 
@@ -150,7 +167,7 @@ State is global and show be used to render the search components.State is readon
 | `recentSearches` | `{ query: string }[]` | A list of just the users recent searches that match the `visibleSearchTerm` |
 | `selectedIndex` | `number` | The index of the selected autocomplete option. By default this is `-1` which means no autocomplete is selected. As a user cycles through autocomplete (see `NEXT_AUTOCOMPLETE_OPTION` below) this index will change. This index should be used to highlight the row in the autocomplete |
 
-### Actions
+## Actions
 
 State can not be edited directly. Instead you should run an action to update state. For example:
 
@@ -169,7 +186,9 @@ action.runSearch();
 | `loadMore()`                                                                               | This will load more results                                                                                                                     |
 | `setConfiguration(config: Config)`                                                         | Usually only set on load. This will automatically be set via the `<AnswersContext />`. This can however be updated in the middle of a sessions. |
 | `chooseAutocompleteOption(index: number)`                                                  | Choose the autocomplete option at the specified index. This will handle logging analytics, checking for geosearch and then running a search     |
+| `clearSearch()`                                                                            | Clears out all sorting, faceting, filters and search term                                                                                       |
 
-### Todos
+## Todos
 
-- Add analytics
+- Analytics
+- Universal Search

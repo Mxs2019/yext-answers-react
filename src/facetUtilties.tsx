@@ -1,4 +1,5 @@
 import { Facet, SimpleFilter } from '@yext/answers-core';
+import { AppliedFilter } from './initialState';
 
 export const getFacetFilters = (facets: Facet[]): SimpleFilter[] => {
   return facets
@@ -8,6 +9,26 @@ export const getFacetFilters = (facets: Facet[]): SimpleFilter[] => {
           .filter(o => o.selected)
           .map(o => {
             return o.filter;
+          }),
+      ];
+    })
+    .flat();
+};
+
+export const getFacetAppliedFilters = (facets: Facet[]): AppliedFilter[] => {
+  return facets
+    .map(f => {
+      return [
+        ...f.options
+          .filter(o => o.selected)
+          .map(o => {
+            const filter: AppliedFilter = {
+              displayName: f.displayName,
+              fieldId: f.fieldId,
+              source: 'FACET',
+              values: [o.displayName],
+            };
+            return filter;
           }),
       ];
     })
