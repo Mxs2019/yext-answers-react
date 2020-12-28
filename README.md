@@ -11,7 +11,7 @@ app shows a basic example of using this library.
 
 - [Installation](#Installation)
 - [Getting Started](#Getting-Started)
-- [Example](#Example)
+- [Example](#Basic-Example)
 - [Documentation](#Documentation)
   - [State](#State)
   - [Actions](#Actions)
@@ -32,6 +32,11 @@ yarn add yext-answers-react
 
 > This library requires @yext/answers-core as a dependency. Since this library is currently not public, you will need to make sure this library is cloned and built and lives in the same parent folder as the sample project.
 
+### Implementation Details
+
+- This library is written in Typescript and too have the best experience you should use typescript as well.
+- This library exposes `state` and `actions` via a react hook.
+
 ### Create React App
 
 If you wanted to use this library with `create-react-app` you would issue the following commands:
@@ -42,10 +47,6 @@ cd product-search
 yarn add yext-answers-react
 yarn start
 ```
-
-### Typescript
-
-This library is written in Typescript and too have the best experience you should use typescript as well.
 
 # Getting Started
 
