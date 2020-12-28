@@ -135,7 +135,9 @@ const { state } = useAnswers();
 console.log(state.visibleSearchTerm);
 ```
 
-State is global and show be used to render the search components.State is readonly.
+State is global and show be used to render the search components.
+
+> State is READONLY. To manipulate state you should use the `actions` below.
 
 **Global State**
 
@@ -153,6 +155,8 @@ State is global and show be used to render the search components.State is readon
 | `results`            | `any[]`             | The results child from verticalresults                                                                                                                                                     |
 | `facets`             | `Facet[]`           | A set of facets returned from the vertical search                                                                                                                                          |
 | `sortBys`            | `SortBy[]`          | The currently set sort bys                                                                                                                                                                 |
+| `appliedFilters`     | `AppliedFilter[]`   | The currently set of applied filters. This can be used to show a list of the applied filters. Any filters with type `FACET` can be removed useing the `toggleFacet` action.                |
+| `facetFilters`       | `SimpleFilter[]`    | The currently set of filter. This should generally NOT be used to build a UI.                                                                                                              |
 | `autocomplete`       | `AutocompleteState` | Autocomplete object (see below)                                                                                                                                                            |
 | `debug`              | `boolean`           | Whether or not debug mode is turned on                                                                                                                                                     |
 
