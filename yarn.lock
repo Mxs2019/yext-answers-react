@@ -1524,8 +1524,10 @@
   resolved "https://registry.yarnpkg.com/@xtuc/long/-/long-4.2.2.tgz#d291c6a4e97989b5c61d9acf396ae4fe133a718d"
   integrity sha512-NuHqBY1PB/D8xU6s/thBgOAiAP7HOYDQ32+BFZILJ8ivkUkAHQnWfn6WhL79Owj1qmUnoN/YPhktdIoucipkAQ==
 
-"@yext/answers-core@file:../answers-core/":
-  version "1.0.0"
+"@yext/answers-core@^1.0.0-beta.0":
+  version "1.0.0-beta.0"
+  resolved "https://registry.yarnpkg.com/@yext/answers-core/-/answers-core-1.0.0-beta.0.tgz#dd216b30bdb9e2241d4613032167ccc3c217b25c"
+  integrity sha512-QZajNK4k3offpms1aQ2ekWT+XCE1/ohLPjz+C+FBV6EtfreMRAxx8ba5WfiLEQiP7N+pD7Toj8bnv8vRED4lYw==
   dependencies:
     whatwg-fetch "^3.4.1"
 
