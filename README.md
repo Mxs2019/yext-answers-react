@@ -30,8 +30,6 @@ OR
 yarn add yext-answers-react
 ```
 
-> This library requires @yext/answers-core as a dependency. Since this library is currently not public, you will need to make sure this library is cloned and built and lives in the same parent folder as the sample project.
-
 ### Implementation Details
 
 - This library is written in Typescript and too have the best experience you should use typescript as well.
@@ -74,17 +72,7 @@ Here is a basic example app that has a search bar and a set of results. Generall
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 import { provideCore } from '@yext/answers-core';
-import { AnswersContext, useAnswers, Config } from 'yext-answers-react';
-
-const config: Config = {
-  apiKey: '7bce922a5847aff36dc33345921ba700',
-  experienceKey: 'dtc_demo',
-  experienceVersion: 'PRODUCTION',
-  locale: 'en',
-  verticalKey: 'products',
-  runSearchOnLoad: true,
-  debug: true,
-};
+import { AnswersContext, useAnswers } from 'yext-answers-react';
 
 const App = () => {
   const { state, actions } = useAnswers();
@@ -117,11 +105,21 @@ const App = () => {
 };
 
 ReactDOM.render(
-  <AnswersContext config={config}>
+  <AnswersContext config={{
+  apiKey: '7bce922a5847aff36dc33345921ba700',
+  experienceKey: 'dtc_demo',
+  experienceVersion: 'PRODUCTION',
+  locale: 'en',
+  verticalKey: 'products',
+  runSearchOnLoad: true,
+  debug: true,
+}}>
     <App />
   </AnswersContext>,
   document.getElementById('root')
 );
+
+export default App;
 ```
 
 # Documentation
